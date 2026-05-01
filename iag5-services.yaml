@@ -3,6 +3,828 @@
 # Load with: iagctl db import iag5-services.yaml
 # Dry-run:   iagctl db import iag5-services.yaml --validate
 
+decorators:
+
+  # ── MG1: switch_refresh_validation, collect_git_util, project-backup ───────
+
+  - name: email-send
+    schema:
+      $id: email-send
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        to:
+          type: string
+          description: Recipient email address
+        subject:
+          type: string
+          description: Email subject
+        body:
+          type: string
+          description: Email body text
+        smtp_host:
+          type: string
+          description: SMTP server hostname
+        smtp_port:
+          type: integer
+          description: SMTP port
+          default: 25
+        from_addr:
+          type: string
+          description: Sender address
+          default: no-reply@bloomberg.com
+      required: [to, subject, body, smtp_host]
+      additionalProperties: false
+
+  - name: project-backup
+    schema:
+      $id: project-backup
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        itential_host:
+          type: string
+          description: Itential platform hostname
+        token:
+          type: string
+          description: Itential API auth token
+        project_name:
+          type: string
+          description: Project name to back up
+        output_path:
+          type: string
+          description: Destination file path for the backup
+      required: [itential_host, token, project_name, output_path]
+      additionalProperties: false
+
+  - name: refresh-pre-check
+    schema:
+      $id: refresh-pre-check
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: Device hostname or IP
+        username:
+          type: string
+          description: Device username
+        password:
+          type: string
+          description: Device password
+        check_type:
+          type: string
+          description: Check profile to run
+          default: standard
+      required: [host, username, password]
+      additionalProperties: false
+
+  - name: refresh-pre-check-snapshot
+    schema:
+      $id: refresh-pre-check-snapshot
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: Device hostname or IP
+        username:
+          type: string
+          description: Device username
+        password:
+          type: string
+          description: Device password
+        output_file:
+          type: string
+          description: File path to write the snapshot
+      required: [host, username, password, output_file]
+      additionalProperties: false
+
+  - name: switch-refresh-save-site-devices
+    schema:
+      $id: switch-refresh-save-site-devices
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        site:
+          type: string
+          description: Site name
+        devices:
+          type: string
+          description: JSON array of device hostnames
+      required: [site, devices]
+      additionalProperties: false
+
+  - name: switch-refresh-save-precheck-file
+    schema:
+      $id: switch-refresh-save-precheck-file
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        device:
+          type: string
+          description: Device hostname
+        filename:
+          type: string
+          description: Destination filename
+        content:
+          type: string
+          description: File content to save
+      required: [device, filename, content]
+      additionalProperties: false
+
+  - name: switch-refresh-save-postcheck-file
+    schema:
+      $id: switch-refresh-save-postcheck-file
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        device:
+          type: string
+          description: Device hostname
+        filename:
+          type: string
+          description: Destination filename
+        content:
+          type: string
+          description: File content to save
+      required: [device, filename, content]
+      additionalProperties: false
+
+  - name: refresh-post-check
+    schema:
+      $id: refresh-post-check
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: Device hostname or IP
+        username:
+          type: string
+          description: Device username
+        password:
+          type: string
+          description: Device password
+        pre_check_snapshot:
+          type: string
+          description: Pre-check snapshot as a JSON string
+      required: [host, username, password, pre_check_snapshot]
+      additionalProperties: false
+
+  - name: refresh-ping-post-check
+    schema:
+      $id: refresh-ping-post-check
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        hosts:
+          type: string
+          description: Comma-separated list of IP addresses to ping
+        expected_count:
+          type: integer
+          description: Minimum number of hosts expected to respond
+          default: 0
+      required: [hosts]
+      additionalProperties: false
+
+  - name: git-pull
+    schema:
+      $id: git-pull
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        repo_path:
+          type: string
+          description: Local path to the git repository
+        branch:
+          type: string
+          description: Branch to pull
+          default: main
+      required: [repo_path]
+      additionalProperties: false
+
+  - name: git-add
+    schema:
+      $id: git-add
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        repo_path:
+          type: string
+          description: Local path to the git repository
+        files:
+          type: string
+          description: Files to stage — comma-separated or "." for all
+          default: "."
+      required: [repo_path]
+      additionalProperties: false
+
+  - name: git-commit
+    schema:
+      $id: git-commit
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        repo_path:
+          type: string
+          description: Local path to the git repository
+        commit_message:
+          type: string
+          description: Commit message
+          default: automated commit
+      required: [repo_path]
+      additionalProperties: false
+
+  - name: git-push
+    schema:
+      $id: git-push
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        repo_path:
+          type: string
+          description: Local path to the git repository
+        branch:
+          type: string
+          description: Branch to push
+          default: main
+        remote:
+          type: string
+          description: Remote name
+          default: origin
+      required: [repo_path]
+      additionalProperties: false
+
+  # ── MG2: Forescout_host_query, collect_cisco ─────────────────────────────
+
+  - name: forescout-host-log-query
+    schema:
+      $id: forescout-host-log-query
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+          default: ForescoutDB
+        mac:
+          type: string
+          description: MAC address to query
+      required: [host, mac]
+      additionalProperties: false
+
+  - name: forescout-ip-to-mac-query
+    schema:
+      $id: forescout-ip-to-mac-query
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+          default: ForescoutDB
+        ip:
+          type: string
+          description: IP address to resolve to MAC
+      required: [host, ip]
+      additionalProperties: false
+
+  - name: fs-host-query-epoch
+    schema:
+      $id: fs-host-query-epoch
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        forescout_host:
+          type: string
+          description: Forescout server hostname or IP
+        mac:
+          type: string
+          description: Host MAC address to look up
+        epoch:
+          type: integer
+          description: Epoch timestamp for the query window
+      required: [forescout_host, mac, epoch]
+      additionalProperties: false
+
+  # ── MG3: collect_arista, inventory_grouping ───────────────────────────────
+
+  - name: ping-ip
+    schema:
+      $id: ping-ip
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        hosts:
+          type: string
+          description: Comma-separated list of IP addresses to ping
+        count:
+          type: integer
+          description: Number of ping packets per host
+          default: 4
+      required: [hosts]
+      additionalProperties: false
+
+  # ── MG4: configuration_compliance_development ─────────────────────────────
+
+  - name: awx-inventory-query
+    schema:
+      $id: awx-inventory-query
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        awx_host:
+          type: string
+          description: AWX hostname or URL
+        token:
+          type: string
+          description: AWX API token
+        inventory_name:
+          type: string
+          description: Inventory name to query
+      required: [awx_host, token, inventory_name]
+      additionalProperties: false
+
+  # ── MG5: network_device_upgrade ───────────────────────────────────────────
+
+  - name: ndu-db-query
+    schema:
+      $id: ndu-db-query
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+        target_device:
+          type: string
+          description: Switch/device name (SWITCH column value)
+        table:
+          type: string
+          description: Table name to query (without dbo. prefix)
+          enum: [code_upgrade, code_file_staging, patch_file_staging, patch_application, code_upgrade_pre_check]
+        column:
+          type: string
+          description: Column to select
+          enum: [RESULT, DIFF_RESULT, PRE_CHECK_RESULT]
+      required: [host, database, target_device, table, column]
+      additionalProperties: false
+
+  - name: ndu-crud-code-upgrade
+    schema:
+      $id: ndu-crud-code-upgrade
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+        target_device:
+          type: string
+          description: Switch/device name (@SWITCH)
+        network_os:
+          type: string
+          description: Network OS (@OS)
+        upgrade_version:
+          type: string
+          description: Current EOS version being upgraded to (@CURRENT_VERSION)
+        diff_result_json:
+          type: string
+          description: Diff result object as a JSON string (@DIFF_RESULT)
+        result_json:
+          type: string
+          description: Full result object as a JSON string (@SUCCESS, @RESULT)
+      required: [host, database, target_device, network_os, upgrade_version, diff_result_json, result_json]
+      additionalProperties: false
+
+  - name: ndu-crud-code-file-staging
+    schema:
+      $id: ndu-crud-code-file-staging
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+        target_device:
+          type: string
+          description: Switch/device name (@SWITCH)
+        network_os:
+          type: string
+          description: Network OS (@OS)
+        eos_code_filename:
+          type: string
+          description: EOS code filename (@FILENAME)
+        result_json:
+          type: string
+          description: Full result object as a JSON string (@SUCCESS, @RESULT)
+      required: [host, database, target_device, network_os, eos_code_filename, result_json]
+      additionalProperties: false
+
+  - name: ndu-crud-patch-file-staging
+    schema:
+      $id: ndu-crud-patch-file-staging
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+        target_device:
+          type: string
+          description: Switch/device name (@SWITCH)
+        network_os:
+          type: string
+          description: Network OS (@OS)
+        eos_patch_filename:
+          type: string
+          description: EOS patch filename (@FILENAME)
+        eos_patch:
+          type: string
+          description: EOS patch identifier or flag (@EOS_PATCH)
+        result_json:
+          type: string
+          description: Full result object as a JSON string (@SUCCESS, @RESULT)
+      required: [host, database, target_device, network_os, eos_patch_filename, eos_patch, result_json]
+      additionalProperties: false
+
+  - name: ndu-crud-patch-application
+    schema:
+      $id: ndu-crud-patch-application
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+        target_device:
+          type: string
+          description: Switch/device name (@SWITCH)
+        network_os:
+          type: string
+          description: Network OS (@OS)
+        eos_patch_filename:
+          type: string
+          description: EOS patch filename (@FILENAME)
+        eos_patch:
+          type: string
+          description: EOS patch identifier or flag (@EOS_PATCH)
+        diff_result_json:
+          type: string
+          description: Diff result object as a JSON string (@DIFF_RESULT)
+        result_json:
+          type: string
+          description: Full result object as a JSON string (@SUCCESS, @RESULT)
+      required: [host, database, target_device, network_os, eos_patch_filename, eos_patch, diff_result_json, result_json]
+      additionalProperties: false
+
+  - name: ndu-crud-code-upgrade-pre-check
+    schema:
+      $id: ndu-crud-code-upgrade-pre-check
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: SQL Server hostname or IP address
+        port:
+          type: integer
+          description: SQL Server port
+          default: 1433
+        database:
+          type: string
+          description: Database name
+        target_device:
+          type: string
+          description: Switch/device name (@SWITCH)
+        network_os:
+          type: string
+          description: Network OS (@OS)
+        pre_check_success:
+          type: string
+          description: Pre-check success flag — 'true' or 'false' (@PRE_CHECK_SUCCESS)
+        pre_check_result_json:
+          type: string
+          description: Pre-check result object as a JSON string (@PRE_CHECK_RESULT)
+      required: [host, database, target_device, network_os, pre_check_success, pre_check_result_json]
+      additionalProperties: false
+
+  - name: flatten-diff-data
+    schema:
+      $id: flatten-diff-data
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        device:
+          type: string
+          description: Device hostname the diff relates to
+        diff_result:
+          type: string
+          description: Diff result object as a JSON string
+      required: [device, diff_result]
+      additionalProperties: false
+
+  - name: get-md5-checksum-eos-upgrade
+    schema:
+      $id: get-md5-checksum-eos-upgrade
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: Device hostname or IP
+        username:
+          type: string
+          description: Device username
+        password:
+          type: string
+          description: Device password
+        filename:
+          type: string
+          description: EOS image filename to checksum
+      required: [host, username, password, filename]
+      additionalProperties: false
+
+  - name: get-md5-checksum-patch-eos
+    schema:
+      $id: get-md5-checksum-patch-eos
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: Device hostname or IP
+        username:
+          type: string
+          description: Device username
+        password:
+          type: string
+          description: Device password
+        filename:
+          type: string
+          description: EOS patch filename to checksum
+      required: [host, username, password, filename]
+      additionalProperties: false
+
+  - name: code-upgrade-ftp
+    schema:
+      $id: code-upgrade-ftp
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        target_device:
+          type: string
+          description: Target device hostname
+        eos_filename:
+          type: string
+          description: EOS image filename to transfer
+        ftp_server:
+          type: string
+          description: FTP server hostname or IP
+        ftp_user:
+          type: string
+          description: FTP username
+        ftp_password:
+          type: string
+          description: FTP password
+      required: [target_device, eos_filename, ftp_server, ftp_user, ftp_password]
+      additionalProperties: false
+
+  - name: get-list-files-scp-server
+    schema:
+      $id: get-list-files-scp-server
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        scp_server:
+          type: string
+          description: SCP server hostname or IP
+        scp_user:
+          type: string
+          description: SCP username
+        scp_path:
+          type: string
+          description: Remote path to list files from
+          default: /images
+      required: [scp_server, scp_user]
+      additionalProperties: false
+
+  - name: eos-code-upgrade-scp
+    schema:
+      $id: eos-code-upgrade-scp
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        target_device:
+          type: string
+          description: Target device hostname
+        eos_filename:
+          type: string
+          description: EOS image filename to transfer
+        scp_server:
+          type: string
+          description: SCP server hostname or IP
+        scp_user:
+          type: string
+          description: SCP username
+        scp_password:
+          type: string
+          description: SCP password
+      required: [target_device, eos_filename, scp_server, scp_user, scp_password]
+      additionalProperties: false
+
+  - name: eos-patch-scp
+    schema:
+      $id: eos-patch-scp
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        target_device:
+          type: string
+          description: Target device hostname
+        patch_filename:
+          type: string
+          description: EOS patch filename to transfer
+        scp_server:
+          type: string
+          description: SCP server hostname or IP
+        scp_user:
+          type: string
+          description: SCP username
+        scp_password:
+          type: string
+          description: SCP password
+      required: [target_device, patch_filename, scp_server, scp_user, scp_password]
+      additionalProperties: false
+
+  # ── MG6: F5_vip_query ────────────────────────────────────────────────────
+
+  - name: f5-interactive
+    schema:
+      $id: f5-interactive
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: F5 hostname or IP
+        username:
+          type: string
+          description: F5 username
+        password:
+          type: string
+          description: F5 password
+        command:
+          type: string
+          description: iControl REST command or tmsh command to execute
+        partition:
+          type: string
+          description: BIG-IP partition
+          default: Common
+      required: [host, username, password, command]
+      additionalProperties: false
+
+  - name: f5-interactive-v2
+    schema:
+      $id: f5-interactive-v2
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        host:
+          type: string
+          description: F5 hostname or IP
+        username:
+          type: string
+          description: F5 username
+        password:
+          type: string
+          description: F5 password
+        command:
+          type: string
+          description: iControl REST command or tmsh command to execute
+        partition:
+          type: string
+          description: BIG-IP partition
+          default: Common
+        node:
+          type: string
+          description: Target node name (optional)
+        pool:
+          type: string
+          description: Target pool name (optional)
+      required: [host, username, password, command]
+      additionalProperties: false
+
+  # ── MG8: Config_build ─────────────────────────────────────────────────────
+
+  - name: 731-camp2-0-config-build
+    schema:
+      $id: 731-camp2-0-config-build
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        device_list:
+          type: array
+          description: List of device hostnames to build config for
+          items:
+            type: string
+          default: []
+        config_template:
+          type: string
+          description: Config template name to use
+          default: 731_camp2_0
+        output_path:
+          type: string
+          description: Output directory for generated configs
+          default: /tmp/config-build
+      additionalProperties: false
+
+  # ── Verify before developing ──────────────────────────────────────────────
+
+  - name: bbgithub-bulk-upload
+    schema:
+      $id: bbgithub-bulk-upload
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        repo_url:
+          type: string
+          description: GitHub repository URL
+        token:
+          type: string
+          description: GitHub personal access token
+        source_dir:
+          type: string
+          description: Local directory of files to upload
+        branch:
+          type: string
+          description: Target branch
+          default: main
+      required: [repo_url, token, source_dir]
+      additionalProperties: false
+
+  - name: nslookup-list-ips
+    schema:
+      $id: nslookup-list-ips
+      $schema: https://json-schema.org/draft/202012/schema
+      type: object
+      properties:
+        hostnames:
+          type: string
+          description: Comma-separated list of hostnames to resolve
+      required: [hostnames]
+      additionalProperties: false
+
 repositories:
   - name: iag5-git-repo
     type: git
@@ -145,7 +967,6 @@ services:
     working-directory: playbooks
     repository: iag5-git-repo
     decorator: fs-host-query-epoch
-
 
   # ── MG3: collect_arista, inventory_grouping ───────────────────────────────
 
