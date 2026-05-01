@@ -1,0 +1,16 @@
+---
+# Stub for IAG5 service: itential-set-config (Ansible role)
+# Replace with Bloomberg's actual role when available.
+# Pushes configuration commands to a device via the Itential platform.
+# Expected vars: itential_set_config_host, itential_set_config_device, itential_set_config_commands
+- name: push config commands via Itential (stub)
+  debug:
+    msg: "STUB: pushing {{ itential_set_config_commands | length }} command(s) to {{ itential_set_config_device }} via {{ itential_set_config_host }}"
+
+- name: set result
+  set_fact:
+    itential_set_config_result:
+      success: true
+      device: "{{ itential_set_config_device }}"
+      commands_applied: "{{ itential_set_config_commands | length }}"
+      committed: true

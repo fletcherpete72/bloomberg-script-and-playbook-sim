@@ -1,0 +1,26 @@
+---
+# Stub for IAG5 service: fs-host-query-epoch
+# Replace with Bloomberg's actual playbook when available.
+# Calls fs_host_query_epoch.py to query Forescout at a given epoch timestamp.
+# Expected extra_vars: forescout_host, mac, epoch
+- name: "Stub: fs-host-query-epoch"
+  hosts: "{{ target_host | default('localhost') }}"
+  gather_facts: false
+  vars:
+    forescout_host: "{{ forescout_host | mandatory }}"
+    mac: "{{ mac | mandatory }}"
+    epoch: "{{ epoch | mandatory }}"
+    scripts_dir: "{{ playbook_dir }}/../scripts"
+  tasks:
+    - name: run fs_host_query_epoch.py (stub)
+      command: >
+        python3 {{ scripts_dir }}/fs_host_query_epoch.py
+        --host {{ forescout_host }}
+        --mac {{ mac }}
+        --epoch {{ epoch }}
+      register: script_output
+    - name: parse result
+      set_fact:
+        result: "{{ script_output.stdout | from_json }}"
+    - debug:
+        var: result

@@ -1,0 +1,7 @@
+---
+# Defaults for stub role: itential-set-config
+itential_set_config_host: "localhost"
+itential_set_config_username: ""
+itential_set_config_password: ""
+itential_set_config_device: ""
+itential_set_config_commands: []

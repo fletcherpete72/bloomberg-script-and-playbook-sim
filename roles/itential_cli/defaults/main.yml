@@ -1,0 +1,7 @@
+---
+# Defaults for stub role: itential-cli
+itential_cli_host: "localhost"
+itential_cli_username: ""
+itential_cli_password: ""
+itential_cli_command: ""
+itential_cli_device: ""

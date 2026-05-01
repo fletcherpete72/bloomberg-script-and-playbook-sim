@@ -1,0 +1,20 @@
+---
+# Stub for IAG5 service: 731-camp2-0-config-build
+# Replace with Bloomberg's actual playbook when available.
+# Expected extra_vars: device_list, config_template, output_path
+- name: "Stub: 731-camp2-0-config-build"
+  hosts: "{{ target_host | default('localhost') }}"
+  gather_facts: false
+  vars:
+    device_list: "{{ device_list | default([]) }}"
+    config_template: "{{ config_template | default('731_camp2_0') }}"
+    output_path: "{{ output_path | default('/tmp/config-build') }}"
+  tasks:
+    - name: build 731 CAMP2.0 configuration (stub)
+      debug:
+        msg: "STUB: building config for {{ device_list | length }} device(s) using template {{ config_template }}"
+    - name: set result
+      set_fact:
+        result: "{{ {'success': true, 'template': config_template, 'output_path': output_path, 'device_count': device_list | length, 'configs_built': device_list | length} }}"
+    - debug:
+        var: result

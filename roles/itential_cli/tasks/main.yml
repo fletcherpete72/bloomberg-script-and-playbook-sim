@@ -1,0 +1,16 @@
+---
+# Stub for IAG5 service: itential-cli (Ansible role)
+# Replace with Bloomberg's actual role when available.
+# Runs a CLI command on a device via the Itential platform.
+# Expected vars: itential_cli_host, itential_cli_device, itential_cli_command
+- name: run CLI command via Itential (stub)
+  debug:
+    msg: "STUB: running '{{ itential_cli_command }}' on {{ itential_cli_device }} via {{ itential_cli_host }}"
+
+- name: set result
+  set_fact:
+    itential_cli_result:
+      success: true
+      device: "{{ itential_cli_device }}"
+      command: "{{ itential_cli_command }}"
+      output: "stub CLI output for {{ itential_cli_command }}"

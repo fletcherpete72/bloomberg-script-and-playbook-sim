@@ -1,0 +1,19 @@
+---
+# Stub for IAG5 service: git-pull
+# Replace with Bloomberg's actual playbook when available.
+# Expected extra_vars: repo_path, branch (optional)
+- name: "Stub: git-pull"
+  hosts: "{{ target_host | default('localhost') }}"
+  gather_facts: false
+  vars:
+    repo_path: "{{ repo_path | default('/opt/itential/repo') }}"
+    branch: "{{ branch | default('main') }}"
+  tasks:
+    - name: git pull (stub)
+      debug:
+        msg: "STUB: git pull origin {{ branch }} in {{ repo_path }}"
+    - name: set result
+      set_fact:
+        result: "{{ {'success': true, 'repo_path': repo_path, 'branch': branch, 'updated': true} }}"
+    - debug:
+        var: result

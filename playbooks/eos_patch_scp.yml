@@ -1,0 +1,19 @@
+---
+# Stub for IAG5 service: eos-patch-scp
+# Replace with Bloomberg's actual playbook when available.
+# Expected extra_vars: target_device, patch_filename, scp_server, scp_user, scp_password
+- name: "Stub: eos-patch-scp"
+  hosts: "{{ target_device | default('localhost') }}"
+  gather_facts: false
+  vars:
+    patch_filename: "{{ patch_filename | mandatory }}"
+    scp_server: "{{ scp_server | mandatory }}"
+  tasks:
+    - name: transfer EOS patch via SCP (stub)
+      debug:
+        msg: "STUB: SCP transfer of {{ patch_filename }} from {{ scp_server }} to {{ inventory_hostname }}"
+    - name: set result
+      set_fact:
+        result: "{{ {'success': true, 'device': inventory_hostname, 'filename': patch_filename, 'transferred': true, 'md5_match': true} }}"
+    - debug:
+        var: result

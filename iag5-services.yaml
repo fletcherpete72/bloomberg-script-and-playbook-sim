@@ -1,0 +1,352 @@
+---
+# IAG5 service definitions for Bloomberg automation.
+# Load with: iagctl db import iag5-services.yaml
+# Dry-run:   iagctl db import iag5-services.yaml --validate
+
+resources:
+
+  repositories:
+    - name: iag5-git-repo
+      type: git
+      url: PLACEHOLDER_GIT_REPO_URL
+      branch: main
+
+  services:
+
+    # ── MG1: switch_refresh_validation, collect_git_util, project-backup ───────
+
+    - name: email-send
+      type: python-script
+      filename: email_send.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: email-send
+
+    - name: project-backup
+      type: python-script
+      filename: project_backup.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: project-backup
+
+    - name: refresh-pre-check
+      type: python-script
+      filename: refresh_pre_check.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: refresh-pre-check
+
+    - name: refresh-pre-check-snapshot
+      type: python-script
+      filename: refresh_pre_check_snapshot.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: refresh-pre-check-snapshot
+
+    - name: switch-refresh-save-site-devices
+      type: python-script
+      filename: switch_refresh_save_site_devices.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: switch-refresh-save-site-devices
+
+    - name: switch-refresh-save-precheck-file
+      type: python-script
+      filename: switch_refresh_save_precheck_file.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: switch-refresh-save-precheck-file
+
+    - name: switch-refresh-save-postcheck-file
+      type: python-script
+      filename: switch_refresh_save_postcheck_file.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: switch-refresh-save-postcheck-file
+
+    - name: refresh-post-check
+      type: python-script
+      filename: refresh_post_check.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: refresh-post-check
+
+    - name: refresh-ping-post-check
+      type: python-script
+      filename: refresh_ping_post_check.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: refresh-ping-post-check
+
+    - name: git-pull
+      type: ansible-playbook
+      filename: git_pull.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: git-pull
+
+    - name: git-add
+      type: ansible-playbook
+      filename: git_add.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: git-add
+
+    - name: git-commit
+      type: ansible-playbook
+      filename: git_commit.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: git-commit
+
+    - name: git-push
+      type: ansible-playbook
+      filename: git_push.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: git-push
+
+    # ── MG2: Forescout_host_query, collect_cisco ─────────────────────────────
+
+    - name: forescout-host-log-query
+      type: python-script
+      filename: forescout_host_log_query.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: forescout-host-log-query
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: forescout-ip-to-mac-query
+      type: python-script
+      filename: forescout_ip_to_mac_query.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: forescout-ip-to-mac-query
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: fs-host-query-epoch
+      type: ansible-playbook
+      filename: fs_host_query_epoch.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: fs-host-query-epoch
+
+    - name: itential-cli
+      type: ansible-role
+      role: itential_cli
+      working-directory: roles
+      repository: iag5-git-repo
+      decorator: itential-cli
+
+    - name: itential-set-config
+      type: ansible-role
+      role: itential_set_config
+      working-directory: roles
+      repository: iag5-git-repo
+      decorator: itential-set-config
+
+    # ── MG3: collect_arista, inventory_grouping ───────────────────────────────
+
+    - name: ping-ip
+      type: python-script
+      filename: ping_list_ips.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: ping-ip
+
+    # ── MG4: configuration_compliance_development ─────────────────────────────
+
+    - name: awx-inventory-query
+      type: python-script
+      filename: awx_inventory_query.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: awx-inventory-query
+
+    # ── MG5: network_device_upgrade ───────────────────────────────────────────
+
+    - name: ndu-db-query
+      type: python-script
+      filename: ndu_db_query.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: ndu-db-query
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: ndu-crud-code-upgrade
+      type: python-script
+      filename: ndu_crud_code_upgrade.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: ndu-crud-code-upgrade
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: ndu-crud-code-file-staging
+      type: python-script
+      filename: ndu_crud_code_file_staging.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: ndu-crud-code-file-staging
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: ndu-crud-patch-file-staging
+      type: python-script
+      filename: ndu_crud_patch_file_staging.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: ndu-crud-patch-file-staging
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: ndu-crud-patch-application
+      type: python-script
+      filename: ndu_crud_patch_application.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: ndu-crud-patch-application
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: ndu-crud-code-upgrade-pre-check
+      type: python-script
+      filename: ndu_crud_code_upgrade_pre_check.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: ndu-crud-code-upgrade-pre-check
+      secrets:
+        - name: mssql-username
+          type: env
+          target: MSSQL_USERNAME
+        - name: mssql-password
+          type: env
+          target: MSSQL_PASSWORD
+
+    - name: flatten-diff-data
+      type: python-script
+      filename: flatten_diff_data.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: flatten-diff-data
+
+    - name: get-md5-checksum-eos-upgrade
+      type: python-script
+      filename: get_md5_checksum_upgrade_version_image_eos.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: get-md5-checksum-eos-upgrade
+
+    - name: get-md5-checksum-patch-eos
+      type: python-script
+      filename: get_md5_checksum_patch_eos.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: get-md5-checksum-patch-eos
+
+    - name: code-upgrade-ftp
+      type: ansible-playbook
+      filename: code_upgrade_ftp.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: code-upgrade-ftp
+
+    - name: get-list-files-scp-server
+      type: ansible-playbook
+      filename: get_list_files_scp_server.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: get-list-files-scp-server
+
+    - name: eos-code-upgrade-scp
+      type: ansible-playbook
+      filename: eos_code_upgrade_scp.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: eos-code-upgrade-scp
+
+    - name: eos-patch-scp
+      type: ansible-playbook
+      filename: eos_patch_scp.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: eos-patch-scp
+
+    # ── MG6: F5_vip_query ────────────────────────────────────────────────────
+
+    - name: f5-interactive
+      type: python-script
+      filename: f5_interactive.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: f5-interactive
+
+    - name: f5-interactive-v2
+      type: python-script
+      filename: f5_interactive_v2.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: f5-interactive-v2
+
+    # ── MG8: Config_build ─────────────────────────────────────────────────────
+
+    - name: 731-camp2-0-config-build
+      type: ansible-playbook
+      filename: 731_camp2_0_config_build.yml
+      working-directory: playbooks
+      repository: iag5-git-repo
+      decorator: 731-camp2-0-config-build
+
+    # ── Verify before developing ──────────────────────────────────────────────
+
+    - name: bbgithub-bulk-upload
+      type: python-script
+      filename: bbgithub_bulk_upload.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: bbgithub-bulk-upload
+
+    - name: nslookup-list-ips
+      type: python-script
+      filename: nslookup_list_ips.py
+      working-directory: scripts
+      repository: iag5-git-repo
+      decorator: nslookup-list-ips

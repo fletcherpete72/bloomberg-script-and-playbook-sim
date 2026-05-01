@@ -1,0 +1,19 @@
+---
+# Stub for IAG5 service: code-upgrade-ftp
+# Replace with Bloomberg's actual playbook when available.
+# Expected extra_vars: target_device, eos_filename, ftp_server, ftp_user, ftp_password
+- name: "Stub: code-upgrade-ftp"
+  hosts: "{{ target_device | default('localhost') }}"
+  gather_facts: false
+  vars:
+    eos_filename: "{{ eos_filename | mandatory }}"
+    ftp_server: "{{ ftp_server | mandatory }}"
+  tasks:
+    - name: transfer EOS image via FTP (stub)
+      debug:
+        msg: "STUB: FTP transfer of {{ eos_filename }} from {{ ftp_server }} to {{ inventory_hostname }}"
+    - name: set result
+      set_fact:
+        result: "{{ {'success': true, 'device': inventory_hostname, 'filename': eos_filename, 'transferred': true, 'md5_match': true} }}"
+    - debug:
+        var: result

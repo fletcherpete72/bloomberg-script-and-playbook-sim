@@ -1,0 +1,19 @@
+---
+# Stub for IAG5 service: eos-code-upgrade-scp
+# Replace with Bloomberg's actual playbook when available.
+# Expected extra_vars: target_device, eos_filename, scp_server, scp_user, scp_password
+- name: "Stub: eos-code-upgrade-scp"
+  hosts: "{{ target_device | default('localhost') }}"
+  gather_facts: false
+  vars:
+    eos_filename: "{{ eos_filename | mandatory }}"
+    scp_server: "{{ scp_server | mandatory }}"
+  tasks:
+    - name: transfer EOS upgrade image via SCP (stub)
+      debug:
+        msg: "STUB: SCP transfer of {{ eos_filename }} from {{ scp_server }} to {{ inventory_hostname }}"
+    - name: set result
+      set_fact:
+        result: "{{ {'success': true, 'device': inventory_hostname, 'filename': eos_filename, 'transferred': true, 'md5_match': true} }}"
+    - debug:
+        var: result
