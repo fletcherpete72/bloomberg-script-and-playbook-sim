@@ -11,7 +11,7 @@ import sys
 def main():
     parser = argparse.ArgumentParser(description="Ping a list of IPs and verify reachability after refresh")
     parser.add_argument("--hosts", required=True, help="Comma-separated list of IP addresses to ping")
-    parser.add_argument("--expected_count", type=int, default=0,
+    parser.add_argument("--expected_count", type=lambda x: int(x) if x and x.strip() else 0,
                         help="Expected number of reachable hosts (0 = all must respond)")
     args = parser.parse_args()
 

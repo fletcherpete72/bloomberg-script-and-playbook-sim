@@ -60,7 +60,7 @@ def main():
         description="Call dbo.crud_patch_application stored procedure"
     )
     parser.add_argument("--host", required=True, help="SQL Server hostname or IP address")
-    parser.add_argument("--port", type=int, default=1433, help="SQL Server port (default: 1433)")
+    parser.add_argument("--port", type=lambda x: int(x) if x and x.strip() else 1433, help="SQL Server port (default: 1433)")
     parser.add_argument("--database", required=True, help="Database name")
     parser.add_argument("--target_device", required=True, help="Switch/device name (@SWITCH)")
     parser.add_argument("--network_os", required=True, help="Network OS (@OS)")

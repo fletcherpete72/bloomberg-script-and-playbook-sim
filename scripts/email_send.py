@@ -14,7 +14,7 @@ def main():
     parser.add_argument("--subject", required=True, help="Email subject")
     parser.add_argument("--body", required=True, help="Email body text")
     parser.add_argument("--smtp_host", required=True, help="SMTP server hostname")
-    parser.add_argument("--smtp_port", type=int, default=25, help="SMTP port (default: 25)")
+    parser.add_argument("--smtp_port", type=lambda x: int(x) if x and x.strip() else 25, help="SMTP port (default: 25)")
     parser.add_argument("--from_addr", default="no-reply@bloomberg.com", help="Sender address")
     args = parser.parse_args()
 

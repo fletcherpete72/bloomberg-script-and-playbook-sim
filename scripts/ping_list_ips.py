@@ -11,7 +11,7 @@ import sys
 def main():
     parser = argparse.ArgumentParser(description="Ping a list of IP addresses and return reachability results")
     parser.add_argument("--hosts", required=True, help="Comma-separated list of IP addresses to ping")
-    parser.add_argument("--count", type=int, default=4, help="Number of ping packets per host (default: 4)")
+    parser.add_argument("--count", type=lambda x: int(x) if x and x.strip() else 4, help="Number of ping packets per host (default: 4)")
     args = parser.parse_args()
 
     if os.environ.get("STUB_FORCE_FAIL"):

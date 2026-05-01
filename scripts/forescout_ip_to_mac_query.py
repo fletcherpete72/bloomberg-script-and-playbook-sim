@@ -48,7 +48,7 @@ def main():
         description="Query ForescoutDB.dbo.Devices to resolve IP address to MAC address"
     )
     parser.add_argument("--host", required=True, help="SQL Server hostname or IP address")
-    parser.add_argument("--port", type=int, default=1433, help="SQL Server port (default: 1433)")
+    parser.add_argument("--port", type=lambda x: int(x) if x and x.strip() else 1433, help="SQL Server port (default: 1433)")
     parser.add_argument("--database", default="ForescoutDB", help="Database name (default: ForescoutDB)")
     parser.add_argument("--ip", required=True, help="IP address to resolve to MAC")
     args = parser.parse_args()
