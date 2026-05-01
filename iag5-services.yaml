@@ -945,6 +945,9 @@ services:
       - name: mssql-password
         type: env
         target: MSSQL_PASSWORD
+      - name: mssql-sim-url
+        type: env
+        target: MSSQL_SIM_URL
 
   - name: forescout-ip-to-mac-query
     type: python-script
