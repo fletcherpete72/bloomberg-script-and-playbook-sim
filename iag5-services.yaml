@@ -825,6 +825,14 @@ decorators:
       required: [hostnames]
       additionalProperties: false
 
+secrets:
+  - name: mssql-sim-url
+    value: http://localhost:3003
+  - name: mssql-username
+    value: dummy
+  - name: mssql-password
+    value: dummy
+
 repositories:
   - name: iag5-git-repo
     type: git
