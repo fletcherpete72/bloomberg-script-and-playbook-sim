@@ -122,7 +122,7 @@ def main():
         with urllib.request.urlopen(req) as resp:
             result = json.loads(resp.read().decode())
 
-        print(json.dumps({"success": True, "result": result}))
+        print(json.dumps({"success": True, "result": result, "response": result}))
 
     except urllib.error.HTTPError as e:
         body = ""
