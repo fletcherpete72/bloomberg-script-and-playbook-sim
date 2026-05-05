@@ -1,0 +1,14 @@
+- name: Test IOS-XR Connectivity
+  hosts: all
+  gather_facts: false
+  connection: network_cli
+
+  tasks:
+    - name: Run show version
+      cisco.iosxr.iosxr_command:
+        commands: show version
+      register: result
+
+    - name: Print output
+      debug:
+        var: result.stdout_lines
