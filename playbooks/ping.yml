@@ -1,0 +1,21 @@
+- name: Ping
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Show all relevant user/connection info
+      debug:
+        msg:
+          - "=== Local (Control Node) ==="
+          - "Local user running Ansible: {{ lookup('pipe', 'whoami') }}"
+          - "Local HOME: {{ lookup('env', 'HOME') }}"
+          - "Local known_hosts: {{ lookup('env', 'HOME') }}/.ssh/known_hosts"
+          - ""
+          - "=== Remote (Managed Node) ==="
+          - "Remote connection user: {{ ansible_user | default(ansible_ssh_user) | default('not set') }}"
+          - "Remote effective user: {{ ansible_user_id | default('N/A - gather_facts needed') }}"
+      delegate_to: localhost
+      run_once: true
+      
+    - name: Use community.general.ping module
+      ansible.builtin.ping:
+
